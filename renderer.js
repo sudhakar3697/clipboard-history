@@ -41,7 +41,11 @@ function loadClips() {
 
                 const adiv = document.createElement('div');
                 adiv.classList.add('clip_action');
-                adiv.innerHTML = '🗑️';
+                const img = document.createElement('img');
+                img.src = 'del.png';
+                img.height = 20;
+                img.width = 20;
+                adiv.appendChild(img);
                 adiv.onclick = (e) => {
                     e.stopPropagation();
                     handleOnClickDelete(entry.id)
