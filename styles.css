@@ -1,0 +1,84 @@
+body {
+    color: white;
+    -webkit-app-region: drag;
+    overflow: hidden;
+    height: 360px;
+    user-select: none;
+}
+
+#header {
+    height: 18px;
+    padding: 3%;
+    background-color: rgba(0, 0, 0, 1);
+}
+
+#appName {
+    float: left;
+    margin-left: 5%;
+    height: 100%;
+}
+
+#close_button {
+    -webkit-app-region: no-drag;
+    cursor: pointer;
+    float: right;
+    height: 100%;
+}
+
+#clip_holder {
+    max-height: 320px;
+    overflow-y: scroll;
+    -webkit-app-region: no-drag;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.clip_item {
+    padding: 3%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    margin: 3%;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    height: 40px;
+}
+
+.clip_item:hover {
+    color: gray;
+    background: rgba(0, 0, 0, 1);
+}
+
+.clip_text {
+    float: left;
+    width: 95%;
+    font-size: 75%;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.clip_action {
+    float: right;
+    width: 5%;
+}
+
+/* Scrollbar Styles */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

@@ -1,0 +1,30 @@
+{
+  "name": "clipboard-history",
+  "version": "1.0.0",
+  "description": "Clipboard history application",
+  "main": "main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "clipboard-event": "^1.6.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sudhakar3697/clipboard-history.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sudhakar3697/clipboard-history/issues"
+  },
+  "homepage": "https://github.com/sudhakar3697/clipboard-history#readme",
+  "keywords": [
+    "clipboard",
+    "clipboard",
+    "history",
+    "clipboard-history",
+    "electron"
+  ],
+  "author": "sudhakar3697 <sudax3@gmail.com>"
+}
