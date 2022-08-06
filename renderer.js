@@ -42,7 +42,7 @@ function loadClips() {
                 const adiv = document.createElement('div');
                 adiv.classList.add('clip_action');
                 const img = document.createElement('img');
-                img.src = 'del.png';
+                img.src = 'icons/del.png';
                 img.height = 20;
                 img.width = 20;
                 adiv.appendChild(img);

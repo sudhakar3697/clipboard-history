@@ -15,7 +15,7 @@ function createWindow() {
     resizable: false,
     transparent: true,
     hasShadow: false,
-    icon: 'clipboard.png',
+    icon: 'icons/clipboard.png',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       sandbox: true
