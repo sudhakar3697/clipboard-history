@@ -8,7 +8,13 @@ class JsonDb {
     constructor(json) {
         if (json)
             this.json = json;
-        fs.writeFileSync(this.json, JSON.stringify({}, null, this.sep));
+        try {
+            const tData = JSON.parse(fs.readFileSync(this.json));
+            if (Object.keys(tData) && Object.keys(tData).length === 0)
+                fs.writeFileSync(this.json, JSON.stringify({}, null, this.sep));
+        } catch (err) {
+            fs.writeFileSync(this.json, JSON.stringify({}, null, this.sep));
+        }
     }
 
     set(key, data) {
