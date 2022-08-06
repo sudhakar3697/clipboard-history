@@ -4,11 +4,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   store: {
     get: (key) => ipcRenderer.invoke('readStore', [key]),
   },
-  setClip: (content) => {
-    ipcRenderer.invoke('setClip', [content]);
+  setClip: (id) => {
+    ipcRenderer.invoke('setClip', [id]);
   },
-  removeClip: (content) => {
-    ipcRenderer.invoke('removeClip', [content]);
+  removeClip: (id) => {
+    ipcRenderer.invoke('removeClip', [id]);
   },
   closeApp: () => {
     ipcRenderer.invoke('closeApp');

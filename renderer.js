@@ -9,14 +9,14 @@ function closeApp() {
     window.electronAPI.closeApp();
 }
 
-async function handleOnClick(content) {
-    console.log('handleOnClick', content)
-    await window.electronAPI.setClip(content);
+async function handleOnClick(id) {
+    console.log('handleOnClick', id)
+    await window.electronAPI.setClip(id);
 }
 
-async function handleOnClickDelete(content) {
-    console.log('handleOnClickDelete', content)
-    await window.electronAPI.removeClip(content);
+async function handleOnClickDelete(id) {
+    console.log('handleOnClickDelete', id)
+    await window.electronAPI.removeClip(id);
 }
 
 function setDataProps(el, { id, ts }) {
@@ -33,7 +33,7 @@ function loadClips() {
             data.forEach((entry) => {
                 const li = document.createElement('div');
                 li.classList.add('clip_item');
-                li.onclick = () => { handleOnClick(entry.content) };
+                li.onclick = () => { handleOnClick(entry.id) };
 
                 const div = document.createElement('div');
                 div.classList.add('clip_text');

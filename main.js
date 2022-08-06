@@ -44,12 +44,16 @@ app.whenReady().then(() => {
     }
   });
 
-  ipcMain.handle('setClip', (e, content) => {
-    clipboard.writeText((content[0]));
+  ipcMain.handle('setClip', (e, args) => {
+    const id = args[0];
+    const clips = store.get('clips') || [];
+    const clip = clips.find(c => c.id === id);
+    store.set('clips', clips.filter(c => c.id !== id));
+    clipboard.writeText(clip.content);
   });
 
-  ipcMain.handle('removeClip', (e, content) => {
-    const id = content[0];
+  ipcMain.handle('removeClip', (e, args) => {
+    const id = args[0];
     const clips = store.get('clips') || [];
     store.set('clips', clips.filter(c => c.id !== id));
     mainWindow.webContents.send('clipboard-changed', {});
