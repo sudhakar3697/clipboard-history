@@ -10,9 +10,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   removeClip: (id) => {
     ipcRenderer.invoke('removeClip', [id]);
   },
-  closeApp: () => {
-    ipcRenderer.invoke('closeApp');
-  },
   on: (e, cb) => {
     ipcRenderer.on(e, cb)
   }

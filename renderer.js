@@ -1,14 +1,3 @@
-document.getElementById('header').addEventListener('mousedown', mouseDown);
-document.getElementById('close_button').addEventListener('click', closeApp);
-
-function mouseDown() {
-    window.getSelection().removeAllRanges();
-}
-
-function closeApp() {
-    window.electronAPI.closeApp();
-}
-
 async function handleOnClick(id) {
     console.log('handleOnClick', id)
     await window.electronAPI.setClip(id);
@@ -17,11 +6,6 @@ async function handleOnClick(id) {
 async function handleOnClickDelete(id) {
     console.log('handleOnClickDelete', id)
     await window.electronAPI.removeClip(id);
-}
-
-function setDataProps(el, { id, ts }) {
-    el.dataset.id = id;
-    el.dataset.ts = ts;
 }
 
 function loadClips() {
@@ -38,6 +22,7 @@ function loadClips() {
                 const div = document.createElement('div');
                 div.classList.add('clip_text');
                 div.innerHTML = entry.content;
+                div.title = entry.content;
 
                 const adiv = document.createElement('div');
                 adiv.classList.add('clip_action');
@@ -54,9 +39,6 @@ function loadClips() {
                 li.appendChild(div);
                 li.appendChild(adiv);
                 holder.appendChild(li);
-                setDataProps(div, entry);
-                setDataProps(adiv, entry);
-                setDataProps(li, entry);
             });
 
         })

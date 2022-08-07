@@ -13,9 +13,8 @@ function createWindow() {
     height: 360,
     minWidth: 300,
     minHeight: 360,
-    frame: false,
-    transparent: true,
-    hasShadow: false,
+    autoHideMenuBar: true,
+    alwaysOnTop: true,
     icon: 'icons/clipboard.png',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -57,10 +56,6 @@ app.whenReady().then(() => {
     const clips = store.get('clips') || [];
     store.set('clips', clips.filter(c => c.id !== id));
     mainWindow.webContents.send('clipboard-changed', {});
-  });
-
-  ipcMain.handle('closeApp', () => {
-    app.quit();
   });
 
   ipcMain.handle('readStore', (e, key) => {

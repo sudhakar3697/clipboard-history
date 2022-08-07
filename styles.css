@@ -1,55 +1,25 @@
 body {
-    color: white;
-    -webkit-app-region: drag;
-    overflow: hidden;
     user-select: none;
-}
-
-#header {
-    height: 18px;
-    padding: 3%;
-    background-color: rgba(0, 0, 0, 1);
-}
-
-#appName {
-    float: left;
-    margin-left: 5%;
-    height: 100%;
-}
-
-#close_button {
-    -webkit-app-region: no-drag;
-    cursor: pointer;
-    float: right;
-    height: 100%;
-}
-
-#clip_holder {
-    height: 75vh;
-    overflow-y: scroll;
-    -webkit-app-region: no-drag;
-    background: rgba(0, 0, 0, 0.25);
+    background-color: black;
 }
 
 .clip_item {
     padding: 3%;
-    background: rgba(0, 0, 0, 0.5);
     color: white;
     margin: 3%;
+    border: 1px solid gray;
     cursor: pointer;
-    -webkit-app-region: no-drag;
-    height: 40px;
+    height: 50px;
 }
 
 .clip_item:hover {
-    color: gray;
-    background: rgba(0, 0, 0, 1);
+    background-color: rgba(128, 128, 128, 0.25);
+    border: 1px solid white;
 }
 
 .clip_text {
     float: left;
     width: 95%;
-    font-size: 75%;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -70,7 +40,7 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 5px;
+    width: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
