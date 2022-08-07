@@ -11,8 +11,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 300,
     height: 360,
+    minWidth: 300,
+    minHeight: 360,
     frame: false,
-    resizable: false,
     transparent: true,
     hasShadow: false,
     icon: 'icons/clipboard.png',
@@ -22,7 +23,6 @@ function createWindow() {
     }
   })
   mainWindow.loadFile('index.html')
-  // mainWindow.webContents.openDevTools()
 }
 
 app.whenReady().then(() => {
