@@ -3,6 +3,12 @@ body {
     background-color: black;
 }
 
+#listener-div {
+    width: 100%;
+    text-align: right;
+    color: white;
+}
+
 .clip_item {
     padding: 3%;
     color: white;

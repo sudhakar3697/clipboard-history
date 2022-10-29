@@ -12,5 +12,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   on: (e, cb) => {
     ipcRenderer.on(e, cb)
+  },
+  setListeningMode: (listen) => {
+    ipcRenderer.invoke('setListeningMode', [listen]);
   }
 });

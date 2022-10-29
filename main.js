@@ -1,10 +1,11 @@
-const { app, BrowserWindow, ipcMain, clipboard } = require('electron')
-const path = require('path')
+const { app, BrowserWindow, ipcMain, clipboard } = require('electron');
+const path = require('path');
+const os = require('os');
+const crypto = require('crypto');
 const clipboardListener = require('clipboard-event');
 const Store = require('./db.js');
-const crypto = require('crypto');
 
-const store = new Store();
+const store = new Store(path.join(os.homedir(), 'ch_db.json'));
 let mainWindow = null;
 
 function createWindow() {
@@ -60,6 +61,14 @@ app.whenReady().then(() => {
 
   ipcMain.handle('readStore', (e, key) => {
     return store.get(key[0]);
+  });
+
+  ipcMain.handle('setListeningMode', (e, args) => {
+    if (args[0]) {
+      clipboardListener.startListening();
+    } else {
+      clipboardListener.stopListening();
+    }
   });
 
   createWindow()
