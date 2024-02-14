@@ -46,21 +46,67 @@ app.whenReady().then(() => {
 
   ipcMain.handle('setClip', (e, args) => {
     const id = args[0];
-    const clips = store.get('clips') || [];
-    const clip = clips.find(c => c.id === id);
-    store.set('clips', clips.filter(c => c.id !== id));
-    clipboard.writeText(clip.content);
+    const tab = args[1];
+    if (tab) {
+      const savedClips = store.get('saved_clips') || [];
+      const clips = savedClips.find(c => c.id === tab).content;
+      const clip = clips.find(c => c.id === id);
+      clipboard.writeText(clip.content);
+    } else {
+      const clips = store.get('clips') || [];
+      const clip = clips.find(c => c.id === id);
+      store.set('clips', clips.filter(c => c.id !== id));
+      clipboard.writeText(clip.content);
+    }
   });
 
   ipcMain.handle('removeClip', (e, args) => {
     const id = args[0];
-    const clips = store.get('clips') || [];
-    store.set('clips', clips.filter(c => c.id !== id));
-    mainWindow.webContents.send('clipboard-changed', {});
+    const tab = args[1];
+    if (tab) {
+      const savedClips = store.get('saved_clips') || [];
+      let clips = savedClips.find(c => c.id === tab).content;
+      clips = clips.filter(c => c.id !== id);
+      savedClips.find(c => c.id === tab).content = clips;
+      store.set('saved_clips', savedClips);
+    } else {
+      const clips = store.get('clips') || [];
+      store.set('clips', clips.filter(c => c.id !== id));
+      mainWindow.webContents.send('clipboard-changed', {});
+    }
   });
 
   ipcMain.handle('readStore', (e, key) => {
     return store.get(key[0]);
+  });
+
+  ipcMain.handle('setSavedClips', (e, args) => {
+    const clips = store.get('saved_clips') || [];
+    clips.push({
+      id: crypto.randomUUID(),
+      name: args[0].name,
+      content: [],
+      ts: Date.now()
+    });
+    store.set('saved_clips', clips);
+  });
+
+  ipcMain.handle('setSavedClipContent', (e, args) => {
+    const savedClips = store.get('saved_clips') || [];
+    const clips = savedClips.find(c => c.id === args[0].tab);
+    clips.content.unshift({
+      id: crypto.randomUUID(),
+      content: args[0].content,
+      ts: Date.now()
+    });
+    store.set('saved_clips', savedClips);
+  });
+
+  ipcMain.handle('deleteTab', (e, args) => {
+    const id = args[0];
+    const savedClips = store.get('saved_clips') || [];
+    const clips = savedClips.filter(c => c.id !== id);
+    store.set('saved_clips', clips);
   });
 
   ipcMain.handle('setListeningMode', (e, args) => {

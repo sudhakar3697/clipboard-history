@@ -3,12 +3,15 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld('electronAPI', {
   store: {
     get: (key) => ipcRenderer.invoke('readStore', [key]),
+    setSavedClips: (value) => ipcRenderer.invoke('setSavedClips', [value]),
+    setSavedClipContent: (value) => ipcRenderer.invoke('setSavedClipContent', [value]),
+    deleteTab: (value) => ipcRenderer.invoke('deleteTab', [value])
   },
-  setClip: (id) => {
-    ipcRenderer.invoke('setClip', [id]);
+  setClip: (id, tab) => {
+    ipcRenderer.invoke('setClip', [id, tab]);
   },
-  removeClip: (id) => {
-    ipcRenderer.invoke('removeClip', [id]);
+  removeClip: (id, tab) => {
+    ipcRenderer.invoke('removeClip', [id, tab]);
   },
   on: (e, cb) => {
     ipcRenderer.on(e, cb)

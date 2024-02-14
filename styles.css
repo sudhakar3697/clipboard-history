@@ -57,3 +57,81 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+/* Basic CSS for tabs */
+#tabs {
+    display: flex;
+}
+
+.tab {
+    background-color: #f1f1f1;
+    cursor: pointer;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.new-tab-div {
+    background-color: #f1f1f1;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.new-tab-div input {
+    width: 125px;
+}
+
+.new-tab-div button {
+    cursor: pointer;
+}
+
+.tab.active {
+    background-color: orange;
+    font-weight: bolder;
+}
+
+.tab-content {
+    margin-top: 10px;
+    display: none;
+}
+
+.tab-content input {
+    margin-left: 3%;
+    width: 70vw;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.tab-content button {
+    cursor: pointer;
+    width: 30px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Close button */
+.close {
+    float: right;
+    cursor: pointer;
+    margin-left: 5px;
+    border-radius: 10px;
+    font-size: x-small;
+    background-color: red;
+    font-weight: bolder;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab {
+        margin-bottom: 10px;
+    }
+}

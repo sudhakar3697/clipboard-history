@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="./styles.css" rel="stylesheet" />
+    <title>Clipboard History</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="./styles.css" rel="stylesheet">
-  <title>Clipboard History</title>
-</head>
+  <body>
+    <div id="listener-div">
+      <label id="listener-label" for="listener">Listening</label>
+      <input type="checkbox" id="listener" checked />
+    </div>
+    <div id="tabs"></div>
+    <div id="clip_holder" class="tab-content active"></div>
 
-<body>
-  <div id="listener-div">
-    <label id="listener-label" for="listener">Listening</label>
-    <input type="checkbox" id="listener" checked/>
-  </div>
-  <div id="clip_holder">
-
-  </div>
-</br>
-  <script src="./renderer.js"></script>
-</body>
-
+    <script src="./renderer.js"></script>
+  </body>
 </html>
