@@ -248,6 +248,7 @@ async function loadTabContentClips(tabName) {
                 adiv.classList.add("clip_action");
                 const img = document.createElement("img");
                 img.src = "icons/del.png";
+                img.alt = "X";
                 img.height = 20;
                 img.width = 20;
                 adiv.appendChild(img);

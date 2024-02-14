@@ -1,12 +1,14 @@
 const cacheName = 'cache-v1';
 const filesToCache = [
-    '/',
-    '/index.html',
-    '/styles.css',
-    '/scripts.js',
-    '/manifest.json',
-    '/icons/clipboard.png',
-    '/icons/del.png',
+    '/clipboard-history',
+    '/clipboard-history/index.html',
+    '/clipboard-history/styles.css',
+    '/clipboard-history/scripts.js',
+    '/clipboard-history/db.js',
+    '/clipboard-history/uuidv4.min.js',
+    '/clipboard-history/manifest.json',
+    '/clipboard-history/icons/clipboard.png',
+    '/clipboard-history/icons/del.png',
 ];
 
 self.addEventListener('install', e => {
