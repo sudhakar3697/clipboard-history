@@ -120,6 +120,68 @@ function setListeningMode(value) {
         }
     });
 
+    document.getElementById("exportBtn").addEventListener("click", async () => {
+        const res = await getAllItems();
+        const fileName = `clipboard-history_${new Date().toISOString()}.json`;
+        const data = JSON.stringify(res, null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+
+        setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 0);
+    });
+
+    document.getElementById("importBtn").addEventListener("click", async () => {
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.click();
+        fileInput.addEventListener("change", () => {
+            const selectedFile = fileInput.files[0];
+            if (selectedFile) {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const fileContent = event.target.result;
+                    const data = JSON.parse(fileContent);
+                    console.log(data);
+                    const conflictingClips = [];
+                    for await (const entry of data) {
+                        const item = await getItem(entry.id);
+                        if (item) {
+                            const clips = item.content.map(i => i.id);
+                            for (const clip of entry.content) {
+                                if (clips.includes(clip.id)) {
+                                    conflictingClips.push(clip.id);
+                                } else {
+                                    item.content.push(clip);
+                                }
+                            }
+                            await updateItem(item);
+                        } else {
+                            await addItem(entry);
+                        }
+                    }
+                    if (conflictingClips.length === 0) {
+                        alert('Successfully imported');
+                    } else {
+                        console.log('Conflicting Clips encountered (' + conflictingClips.join(',') + ')')
+                        alert('Conflicting Clips encountered (' + conflictingClips.join(',') + ')')
+                    }
+                    await loadTabs();
+                    loadClipsByTab(activeTab);
+                };
+                reader.readAsText(selectedFile);
+            }
+        });
+    });
+
 })();
 
 function loadClipsByTab(tab) {
@@ -239,7 +301,7 @@ async function loadTabContentClips(tabName) {
 
                 const div = document.createElement("div");
                 div.classList.add("clip_text");
-                div.innerHTML = entry.content;
+                div.innerText = entry.content;
                 div.title = entry.content;
 
                 const adiv = document.createElement("div");
