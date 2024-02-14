@@ -1,0 +1,18 @@
+{
+  "name": "clipboard-history-web",
+  "description": "Clipboard history web application",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["clipboard", "clipboard-history"],
+  "author": "sudhakar3697",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {}
+}

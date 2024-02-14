@@ -7,6 +7,12 @@ body {
     width: 100%;
     text-align: right;
     color: white;
+    margin-bottom: 10px;
+}
+
+#listener-div button {
+    margin-right: 5px;
+    cursor: pointer;
 }
 
 .clip_item {
@@ -58,7 +64,6 @@ body {
     background: #555;
 }
 
-/* Basic CSS for tabs */
 #tabs {
     display: flex;
 }
@@ -114,7 +119,6 @@ body {
     display: block;
 }
 
-/* Close button */
 .close {
     float: right;
     cursor: pointer;
@@ -125,7 +129,6 @@ body {
     font-weight: bolder;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
     #tabs {
         flex-wrap: wrap;

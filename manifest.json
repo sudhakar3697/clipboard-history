@@ -1,0 +1,27 @@
+{
+  "short_name": "clipboard-history",
+  "name": "Clipboard History",
+  "icons": [
+    {
+      "src": "/icons/clipboard.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/clipboard.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/clipboard.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "black",
+  "display": "standalone",
+  "theme_color": "black"
+}

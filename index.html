@@ -4,17 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="./styles.css" rel="stylesheet" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icons/clipboard.png" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Clipboard History" />
+    <meta
+      name="keywords"
+      content="sudax, sudhakar, sudhakar3697, rsudhakar3697, sudhakar ramasamy, clipboard, clipboard history"
+    />
+    <meta name="author" content="Sudhakar Ramasamy" />
     <title>Clipboard History</title>
   </head>
 
   <body>
     <div id="listener-div">
+      <button id="copyButton">Add Clipboard Content</button>
       <label id="listener-label" for="listener">Listening</label>
-      <input type="checkbox" id="listener" checked />
+      <input type="checkbox" id="listener" />
     </div>
     <div id="tabs"></div>
-    <div id="clip_holder" class="tab-content active"></div>
 
-    <script src="./renderer.js"></script>
+    <script src="./uuidv4.min.js"></script>
+    <script>
+      if (!window.electronAPI) {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker
+            .register("sw.js")
+            .then((registration) => {
+              console.log("[index.html] SW registered", registration.scope);
+            })
+            .catch((error) => {
+              console.error("[index.html] SW registration failed", error);
+            });
+        }
+      }
+    </script>
+    <script src="./db.js"></script>
+    <script src="./scripts.js"></script>
   </body>
 </html>
