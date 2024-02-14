@@ -158,20 +158,18 @@ async function loadTabs() {
                 const contentDiv = document.createElement("div");
                 contentDiv.id = entry.id;
                 contentDiv.classList.add("tab-content");
-                if (entry.id !== 'default') {
-                    const input = document.createElement("input");
-                    input.placeholder = "Enter the content to save";
-                    const button = document.createElement("button");
-                    button.innerText = "+";
-                    button.onclick = async () => {
-                        await saveInto(input.value, entry.id);
-                        input.value = '';
-                    };
-                    const newContentDiv = document.createElement("div");
-                    newContentDiv.appendChild(input);
-                    newContentDiv.appendChild(button);
-                    contentDiv.appendChild(newContentDiv);
-                }
+                const input = document.createElement("input");
+                input.placeholder = "Enter the content to save";
+                const button = document.createElement("button");
+                button.innerText = "+";
+                button.onclick = async () => {
+                    await saveInto(input.value, entry.id);
+                    input.value = '';
+                };
+                const newContentDiv = document.createElement("div");
+                newContentDiv.appendChild(input);
+                newContentDiv.appendChild(button);
+                contentDiv.appendChild(newContentDiv);
                 const contentDiv2 = document.createElement("div");
                 contentDiv2.id = entry.id + "_content";
                 contentDiv.appendChild(contentDiv2);
