@@ -20,6 +20,23 @@ function openDatabase() {
     });
 }
 
+async function deleteStore() {
+    const transaction = db.transaction(['clips'], 'readwrite');
+    const objectStore = transaction.objectStore('clips');
+
+    return new Promise((resolve, reject) => {
+        const request = objectStore.clear();
+        request.onsuccess = function (event) {
+            console.log('Items deleted successfully');
+            resolve();
+        };
+        request.onerror = function (event) {
+            console.error('Error deleting items:', event.target.error);
+            reject(event.target.error);
+        };
+    });
+}
+
 async function addItem(item) {
     const transaction = db.transaction(['clips'], 'readwrite');
     const objectStore = transaction.objectStore('clips');

@@ -17,14 +17,93 @@
   </head>
 
   <body>
-    <div id="listener-div">
-      <button id="importBtn">Import</button>
-      <button id="exportBtn">Export</button>
-      <button id="copyButton">Add Clipboard Content</button>
-      <label id="listener-label" for="listener">Listening</label>
-      <input type="checkbox" id="listener" />
+    <div id="feature-div">
+      <div id="top-bar-div">
+        <button id="importBtn">Import</button>
+        <button id="exportBtn">Export</button>
+        <label id="listener-label" for="listener">Listening</label>
+        <input type="checkbox" id="listener" />
+        <button id="settingsButton">⚙️</button>
+      </div>
+      <div id="tabs"></div>
     </div>
-    <div id="tabs"></div>
+
+    <div id="settings">
+      <div id="settings-head">
+        <button id="back-to-fd-btn">Back</button>
+        <h3>Settings</h3>
+        <button id="settings-apply-btn">Apply</button>
+      </div>
+      <div id="settings-body">
+        <h4>Quick Shortcuts in the Top</h4>
+        <label>Clipboard Monitoring Control</label>
+        <input id="st-cmc" type="checkbox" checked />
+        <br />
+        <label>Import</label>
+        <input id="st-import" type="checkbox" checked />
+        <br />
+        <label>Export</label>
+        <input id="st-export" type="checkbox" checked />
+        <br />
+        <br />
+        <h4>Clipboard Monitoring</h4>
+        <label id="listener-label2" for="listener2">Listening</label>
+        <input type="checkbox" id="listener2" />
+        <br />
+        <br />
+
+        <h4>Tabs & Clips</h4>
+        <label>Limit number of tabs</label>
+        <input type="checkbox" id="tab-limit-check" checked />
+        <br />
+        <br />
+        <label>Maximum number of tabs allowed</label>
+        <input type="number" min="1" id="tab-limit" />
+        <br />
+        <br />
+        <label>Limit number of clips in a tab</label>
+        <input type="checkbox" id="clips-limit-check" checked />
+        <br />
+        <br />
+        <label>Clips per Tab limit (The old ones will be removed)</label>
+        <input type="number" min="1" id="clips-limit" />
+        <br />
+        <br />
+        <hr />
+        <h4>Import & Export</h4>
+        <button id="importBtn2">Import</button>
+        <br />
+        <br />
+        <button id="exportBtn2">Export</button>
+        <br />
+        <br />
+        <h4>Reset & Cleanup</h4>
+        <label>Reset - All Settings</label>
+        <br />
+        <br />
+        <button id="reset-settings-btn">Reset Settings</button>
+        <br />
+        <br />
+        <label>Cleanup - Remove all entries</label>
+        <br />
+        <br />
+        <button id="cleanup-btn">Cleanup</button>
+        <br />
+        <br />
+        <hr />
+        <h4>About</h4>
+        <p>
+          Version: <span>0.0.1</span> <br />
+          Runtime: <span id="runtime">Web/Electron</span> <br /><br />
+          Created by Sudhakar Ramasamy.<br />
+          For more info
+          <a href="https://sudhakar3697.github.io" target="_blank"
+            >sudhakar3697.github.io</a
+          >
+        </p>
+        <p><span>&copy; 2024 Sudhakar Ramasamy. All rights reserved.</span></p>
+      </div>
+    </div>
 
     <script src="./uuidv4.min.js"></script>
     <script>

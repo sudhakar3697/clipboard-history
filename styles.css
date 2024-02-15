@@ -3,16 +3,59 @@ body {
     background-color: black;
 }
 
-#listener-div {
+#top-bar-div {
     width: 100%;
     text-align: right;
     color: white;
     margin-bottom: 10px;
 }
 
-#listener-div button {
+#top-bar-div button {
     margin-right: 5px;
     cursor: pointer;
+}
+
+#settingsButton {
+    background: none;
+}
+
+#settings {
+    display: none;
+    color: white;
+}
+
+#settings button {
+    cursor: pointer;
+}
+
+#settings-head {
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#settings-head h3 {
+    color: orange;
+}
+
+#settings-body h4 {
+    text-decoration: underline;
+}
+
+#tab-limit,
+#clips-limit {
+    width: 50px;
+}
+
+#cleanup-btn {
+    background-color: red;
+    color: white;
+}
+
+#settings-body a {
+    text-decoration: none;
+    color: teal;
 }
 
 .clip_item {
@@ -102,17 +145,22 @@ body {
 }
 
 .tab-content input {
-    margin-left: 3%;
-    width: 70vw;
+    width: 83vw;
     padding: 5px;
     border-radius: 5px;
+    margin-bottom: 1%;
 }
 
 .tab-content button {
+    margin-bottom: 1%;
     cursor: pointer;
     width: 30px;
     padding: 5px;
     border-radius: 5px;
+}
+
+.tab-content .add-cc-content-btn {
+    width: auto;
 }
 
 .tab-content.active {

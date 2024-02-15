@@ -1,8 +1,113 @@
-const listener = document.getElementById('listener');
-let listening = false;
+let listening;
+const defaultListeningValue = window.electronAPI ? true : false;
 let previousClipboardContent = '';
 let checkClipboardTimer;
 let activeTab = 'default';
+let tabLimitValue;
+const defaultTabLimitValue = 10;
+let clipsLimitValue;
+const defaultClipsLimitValue = 20;
+const shortcuts = ['st-cmc', 'st-cmc', 'st-import', 'st-export'];
+const shortcutDefValues = [true, true, true, true];
+const shortcutMappingElems = ['listener-label', 'listener', 'importBtn', 'exportBtn'];
+
+const listener = document.getElementById('listener');
+const listener2 = document.getElementById('listener2');
+const tabLimitCheck = document.getElementById('tab-limit-check');
+const tabLimit = document.getElementById('tab-limit');
+const clipsLimitCheck = document.getElementById('clips-limit-check');
+const clipsLimit = document.getElementById('clips-limit');
+
+function applySettings() {
+    const shortcutConfig = shortcuts.map(s => document.getElementById(s).checked);
+    for (let i = 0; i < shortcuts.length; i++) {
+        document.getElementById(shortcutMappingElems[i]).style.display = shortcutConfig[i] ? 'inline' : 'none';
+        localStorage.setItem(shortcuts[i], shortcutConfig[i]);
+    }
+
+    if (tabLimitCheck.checked) {
+        tabLimitValue = tabLimit.value;
+    } else {
+        tabLimitValue = Infinity;
+    }
+    if (clipsLimitCheck.checked) {
+        clipsLimitValue = clipsLimit.value;
+    } else {
+        clipsLimitValue = Infinity;
+    }
+    localStorage.setItem('tabLimitValue', tabLimitValue);
+    localStorage.setItem('clipsLimitValue', clipsLimitValue);
+
+    listening = listener2.checked;
+    if (!window.electronAPI) {
+        setListeningMode(listening);
+    }
+    listener.checked = listening;
+    localStorage.setItem('listening', listening);
+}
+
+function resetSettingstoDefault() {
+    listener.checked = defaultListeningValue;
+    listener2.checked = listener.checked;
+    listening = listener2.checked;
+    localStorage.setItem('listening', listening);
+
+    tabLimitValue = defaultTabLimitValue;
+    tabLimitCheck.checked = Number.isFinite(tabLimitValue) ? true : false;
+    tabLimit.value = tabLimitValue;
+    tabLimit.disabled = !tabLimitCheck.checked;
+    localStorage.setItem('tabLimitValue', tabLimitValue);
+
+    clipsLimitValue = defaultClipsLimitValue;
+    clipsLimitCheck.checked = Number.isFinite(clipsLimitValue) ? true : false;
+    clipsLimit.value = clipsLimitValue;
+    clipsLimit.disabled = !clipsLimitCheck.checked;
+    localStorage.setItem('clipsLimitValue', clipsLimitValue);
+
+    for (let i = 0; i < shortcuts.length; i++) {
+        document.getElementById(shortcutMappingElems[i]).style.display = shortcutDefValues[i] ? 'inline' : 'none';
+        document.getElementById(shortcuts[i]).checked = shortcutDefValues[i];
+        localStorage.setItem(shortcuts[i], shortcutDefValues[i]);
+    }
+}
+
+async function cleanupData() {
+    await deleteStore();
+    const item = await getItem('default');
+    console.log('item', item);
+    if (!item) {
+        await addItem({ id: 'default', name: 'Default', content: [] });
+    }
+    await loadTabs();
+    loadClipsByTab('default');
+}
+
+function renderSettingValuesFromStore() {
+    listener.checked = localStorage.getItem('listening') ? localStorage.getItem('listening') === 'true' : defaultListeningValue;
+    listener2.checked = listener.checked;
+    listening = listener2.checked;
+    localStorage.setItem('listening', listening);
+
+    tabLimitValue = localStorage.getItem('tabLimitValue') ? parseInt(localStorage.getItem('tabLimitValue')) : defaultTabLimitValue;
+    tabLimitCheck.checked = Number.isFinite(tabLimitValue) ? true : false;
+    tabLimit.value = tabLimitValue;
+    tabLimit.disabled = !tabLimitCheck.checked;
+    localStorage.setItem('tabLimitValue', tabLimitValue);
+
+    clipsLimitValue = localStorage.getItem('clipsLimitValue') ? parseInt(localStorage.getItem('clipsLimitValue')) : defaultClipsLimitValue;
+    clipsLimitCheck.checked = Number.isFinite(clipsLimitValue) ? true : false;
+    clipsLimit.value = clipsLimitValue;
+    clipsLimit.disabled = !clipsLimitCheck.checked;
+    localStorage.setItem('clipsLimitValue', clipsLimitValue);
+
+    for (let i = 0; i < shortcuts.length; i++) {
+        const t = localStorage.getItem(shortcuts[i]) ? localStorage.getItem(shortcuts[i]) === 'true' : shortcutDefValues[i];
+        document.getElementById(shortcuts[i]).checked = t;
+        document.getElementById(shortcutMappingElems[i]).style.display = t ? 'inline' : 'none';
+        localStorage.setItem(shortcuts[i], t);
+    }
+    document.getElementById('runtime').innerText = window.electronAPI ? 'Electron' : 'Web';
+}
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text)
@@ -50,139 +155,73 @@ function setListeningMode(value) {
     if (value) {
         checkClipboard();
         checkClipboardTimer = setInterval(checkClipboard, 1000);
-        listening = true;
     } else {
         clearInterval(checkClipboardTimer);
-        listening = false;
     }
 }
 
-(async () => {
+async function exportContent() {
+    const res = await getAllItems();
+    const fileName = `clipboard-history_${new Date().toISOString()}.json`;
+    const data = JSON.stringify(res, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
 
-    await openDatabase();
-    const item = await getItem('default');
-    console.log('item', item);
-    if (!item) {
-        await addItem({ id: 'default', name: 'Default', content: [] });
-    }
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
 
-    if (window.electronAPI) {
-        listening = true;
-        listener.checked = true;
-        listener.addEventListener('change', () => {
-            listening = listener.checked;
-        });
-        window.electronAPI.on('clipboard-changed', async (event, data) => {
-            console.log('In the renderer clipboard changed', Date.now(), data.content);
-            if (listening) {
-                try {
-                    const item = await getItem('default');
+    setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }, 0);
+}
+
+async function importContent() {
+    // add tab, clips limit check
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.click();
+    fileInput.addEventListener("change", () => {
+        const selectedFile = fileInput.files[0];
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const fileContent = event.target.result;
+                const data = JSON.parse(fileContent);
+                console.log(data);
+                const conflictingClips = [];
+                for await (const entry of data) {
+                    const item = await getItem(entry.id);
                     if (item) {
-                        item.content = [...item.content, {
-                            id: uuidv4(),
-                            content: data.content,
-                            ts: Date.now()
-                        }];
+                        const clips = item.content.map(i => i.id);
+                        for (const clip of entry.content) {
+                            if (clips.includes(clip.id)) {
+                                conflictingClips.push(clip.id);
+                            } else {
+                                item.content.push(clip);
+                            }
+                        }
+                        await updateItem(item);
+                    } else {
+                        await addItem(entry);
                     }
-                    await updateItem(item);
-                    if (activeTab === 'default')
-                        loadClipsByTab('default');
-                } catch (err) {
-                    console.error(err);
                 }
-            }
-        });
-    } else {
-        setListeningMode(false);
-        listener.addEventListener('change', () => {
-            setListeningMode(listener.checked);
-        });
-    }
-
-    await loadTabs();
-    loadClipsByTab('default');
-
-    document.getElementById("copyButton").addEventListener("click", async () => {
-        try {
-            const content = await navigator.clipboard.readText();
-            const item = await getItem(activeTab);
-            if (item) {
-                item.content = [...item.content, {
-                    id: uuidv4(),
-                    content,
-                    ts: Date.now()
-                }];
-            }
-            await updateItem(item);
-            loadClipsByTab(activeTab);
-        } catch (err) {
-            console.error(err);
+                if (conflictingClips.length === 0) {
+                    alert('Successfully imported');
+                } else {
+                    console.log('Conflicting Clips encountered (' + conflictingClips.join(',') + ')')
+                    alert('Conflicting Clips encountered (' + conflictingClips.join(',') + ')')
+                }
+                await loadTabs();
+                loadClipsByTab(activeTab);
+            };
+            reader.readAsText(selectedFile);
         }
     });
-
-    document.getElementById("exportBtn").addEventListener("click", async () => {
-        const res = await getAllItems();
-        const fileName = `clipboard-history_${new Date().toISOString()}.json`;
-        const data = JSON.stringify(res, null, 2);
-        const blob = new Blob([data], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-
-        setTimeout(() => {
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }, 0);
-    });
-
-    document.getElementById("importBtn").addEventListener("click", async () => {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.click();
-        fileInput.addEventListener("change", () => {
-            const selectedFile = fileInput.files[0];
-            if (selectedFile) {
-                const reader = new FileReader();
-                reader.onload = async (event) => {
-                    const fileContent = event.target.result;
-                    const data = JSON.parse(fileContent);
-                    console.log(data);
-                    const conflictingClips = [];
-                    for await (const entry of data) {
-                        const item = await getItem(entry.id);
-                        if (item) {
-                            const clips = item.content.map(i => i.id);
-                            for (const clip of entry.content) {
-                                if (clips.includes(clip.id)) {
-                                    conflictingClips.push(clip.id);
-                                } else {
-                                    item.content.push(clip);
-                                }
-                            }
-                            await updateItem(item);
-                        } else {
-                            await addItem(entry);
-                        }
-                    }
-                    if (conflictingClips.length === 0) {
-                        alert('Successfully imported');
-                    } else {
-                        console.log('Conflicting Clips encountered (' + conflictingClips.join(',') + ')')
-                        alert('Conflicting Clips encountered (' + conflictingClips.join(',') + ')')
-                    }
-                    await loadTabs();
-                    loadClipsByTab(activeTab);
-                };
-                reader.readAsText(selectedFile);
-            }
-        });
-    });
-
-})();
+}
 
 function loadClipsByTab(tab) {
     document.getElementById(`${tab}_tab_btn`).click();
@@ -220,6 +259,22 @@ async function loadTabs() {
                 const contentDiv = document.createElement("div");
                 contentDiv.id = entry.id;
                 contentDiv.classList.add("tab-content");
+                const buttonAc = document.createElement("button");
+                buttonAc.classList.add('add-cc-content-btn');
+                buttonAc.innerText = "Add Current Clipboard Text";
+                buttonAc.onclick = async () => {
+                    const content = await navigator.clipboard.readText();
+                    const item = await getItem(activeTab);
+                    if (item) {
+                        item.content = [...item.content, {
+                            id: uuidv4(),
+                            content,
+                            ts: Date.now()
+                        }];
+                    }
+                    await updateItem(item);
+                    loadClipsByTab(activeTab);
+                };
                 const input = document.createElement("input");
                 input.placeholder = "Enter the content to save";
                 const button = document.createElement("button");
@@ -229,6 +284,7 @@ async function loadTabs() {
                     input.value = '';
                 };
                 const newContentDiv = document.createElement("div");
+                newContentDiv.appendChild(buttonAc);
                 newContentDiv.appendChild(input);
                 newContentDiv.appendChild(button);
                 contentDiv.appendChild(newContentDiv);
@@ -263,6 +319,11 @@ async function loadTabs() {
 }
 
 async function addTab(name) {
+    const tabs = await getAllItems();
+    if (tabs.length >= tabLimitValue) {
+        alert('Tab creation limit exceeded. Use settings to update the limit.');
+        return;
+    }
     const id = uuidv4();
     await addItem({ id, name, content: [] });
     await loadTabs();
@@ -272,6 +333,10 @@ async function addTab(name) {
 async function saveInto(content, tab) {
     const item = await getItem(tab);
     if (item) {
+        if (item.content.length >= clipsLimitValue) {
+            alert('Clips per tab limit exceeded. Use settings to update the limit.');
+            return;
+        }
         item.content = [...item.content, {
             id: uuidv4(),
             content,
@@ -373,3 +438,101 @@ async function handleOnClickDelete(id, tab) {
         await updateItem(item);
     }
 }
+
+async function init() {
+    renderSettingValuesFromStore();
+    await openDatabase();
+    const item = await getItem('default');
+    console.log('item', item);
+    if (!item) {
+        await addItem({ id: 'default', name: 'Default', content: [] });
+    }
+
+    if (window.electronAPI) {
+        listener.addEventListener('change', () => {
+            listening = listener.checked;
+            listener2.checked = listening;
+            localStorage.setItem('listening', listening);
+        });
+        window.electronAPI.on('clipboard-changed', async (event, data) => {
+            console.log('In the renderer clipboard changed', Date.now(), data.content);
+            if (listening) {
+                try {
+                    const item = await getItem('default');
+                    if (item) {
+                        item.content = [...item.content, {
+                            id: uuidv4(),
+                            content: data.content,
+                            ts: Date.now()
+                        }];
+                    }
+                    await updateItem(item);
+                    if (activeTab === 'default')
+                        loadClipsByTab('default');
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+        });
+    } else {
+        setListeningMode(listening);
+        listener.addEventListener('change', () => {
+            listening = listener.checked;
+            listener2.checked = listening;
+            localStorage.setItem('listening', listening);
+            setListeningMode(listening);
+        });
+    }
+
+    await loadTabs();
+    loadClipsByTab('default');
+
+    document.getElementById("settingsButton").addEventListener("click", async () => {
+        document.getElementById('feature-div').style.display = 'none';
+        document.getElementById('settings').style.display = 'block';
+    });
+
+    document.getElementById("back-to-fd-btn").addEventListener("click", async () => {
+        document.getElementById('settings').style.display = 'none';
+        document.getElementById('feature-div').style.display = 'block';
+    });
+
+    tabLimitCheck.addEventListener('change', () => {
+        tabLimit.disabled = !tabLimitCheck.checked;
+    });
+
+    clipsLimitCheck.addEventListener('change', () => {
+        clipsLimit.disabled = !clipsLimitCheck.checked;
+    });
+
+    document.getElementById('settings-apply-btn').addEventListener('click', () => {
+        applySettings();
+    });
+
+    document.getElementById('reset-settings-btn').addEventListener('click', () => {
+        resetSettingstoDefault();
+    });
+
+    document.getElementById('cleanup-btn').addEventListener('click', () => {
+        cleanupData();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", async () => {
+        exportContent();
+    });
+
+    document.getElementById("importBtn").addEventListener("click", async () => {
+        importContent();
+    });
+
+    document.getElementById("exportBtn2").addEventListener("click", async () => {
+        exportContent();
+    });
+
+    document.getElementById("importBtn2").addEventListener("click", async () => {
+        importContent();
+    });
+
+}
+
+init();
