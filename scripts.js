@@ -7,9 +7,9 @@ let tabLimitValue;
 const defaultTabLimitValue = 10;
 let clipsLimitValue;
 const defaultClipsLimitValue = 20;
-const shortcuts = ['st-cmc', 'st-cmc', 'st-import', 'st-export'];
-const shortcutDefValues = [true, true, true, true];
-const shortcutMappingElems = ['listener-label', 'listener', 'importBtn', 'exportBtn'];
+const shortcuts = ['st-cmc', 'st-cmc', 'st-sync-btn', 'st-sync-stat', 'st-import', 'st-export'];
+const shortcutDefValues = [true, true, true, true, true, true];
+const shortcutMappingElems = ['listener-label', 'listener', 'syncBtn', 'syncStat', 'importBtn', 'exportBtn'];
 
 const listener = document.getElementById('listener');
 const listener2 = document.getElementById('listener2');
@@ -76,7 +76,7 @@ async function cleanupData() {
     const item = await getItem('default');
     console.log('item', item);
     if (!item) {
-        await addItem({ id: 'default', name: 'Default', content: [] });
+        await addItem({ id: 'default', name: 'Default', content: [] }, false);
     }
     await loadTabs();
     loadClipsByTab('default');
@@ -125,21 +125,9 @@ function checkClipboard() {
             if (text !== previousClipboardContent) {
                 previousClipboardContent = text;
                 console.log("Changed Clipboard content: " + text);
-                getItem('default')
-                    .then(item => {
-                        if (item) {
-                            item.content = [...item.content, {
-                                id: uuidv4(),
-                                content: text,
-                                ts: Date.now()
-                            }];
-                        }
-                        return updateItem(item);
-                    })
+                saveInto(text, 'default')
                     .then(() => {
                         console.log('Item updated successfully');
-                        if (activeTab === 'default')
-                            loadClipsByTab('default');
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -196,6 +184,7 @@ async function importContent() {
                 for await (const entry of data) {
                     const item = await getItem(entry.id);
                     if (item) {
+                        item.name = entry.uts > item.uts ? entry.name : item.name;
                         const clips = item.content.map(i => i.id);
                         for (const clip of entry.content) {
                             if (clips.includes(clip.id)) {
@@ -236,7 +225,35 @@ async function loadTabs() {
             data.sort((o, n) => o.ts - n.ts);
             for (const entry of data) {
                 const div = document.createElement("div");
-                div.appendChild(document.createTextNode(entry.name));
+                if (entry.id === 'default') {
+                    div.appendChild(document.createTextNode(entry.name));
+                } else {
+                    const tabNameIn = document.createElement("span");
+                    tabNameIn.innerText = entry.name;
+                    tabNameIn.style.padding = '5px';
+                    div.appendChild(tabNameIn);
+                    div.ondblclick = () => {
+                        tabNameIn.contentEditable = 'plaintext-only';
+                        const range = document.createRange();
+                        range.selectNodeContents(tabNameIn);
+                        range.collapse(false);
+                        const selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        tabNameIn.focus();
+                        tabNameIn.addEventListener("blur", async () => {
+                            const newText = tabNameIn.innerText;
+                            if (newText && (entry.name !== newText)) {
+                                console.log("New tab name:", newText);
+                                const item = await getItem(entry.id);
+                                item.name = newText;
+                                console.log(item)
+                                await updateItem(item);
+                            }
+                            this.contentEditable = false;
+                        });
+                    };
+                }
                 div.classList.add("tab");
                 div.onclick = (event) => {
                     openTab(event, entry.id);
@@ -264,16 +281,7 @@ async function loadTabs() {
                 buttonAc.innerText = "Add Current Clipboard Text";
                 buttonAc.onclick = async () => {
                     const content = await navigator.clipboard.readText();
-                    const item = await getItem(activeTab);
-                    if (item) {
-                        item.content = [...item.content, {
-                            id: uuidv4(),
-                            content,
-                            ts: Date.now()
-                        }];
-                    }
-                    await updateItem(item);
-                    loadClipsByTab(activeTab);
+                    await saveInto(content, activeTab);
                 };
                 const input = document.createElement("input");
                 input.placeholder = "Enter the content to save";
@@ -439,7 +447,7 @@ async function handleOnClickDelete(id, tab) {
     }
 }
 
-async function init() {
+(async () => {
     renderSettingValuesFromStore();
     await openDatabase();
     const item = await getItem('default');
@@ -458,17 +466,7 @@ async function init() {
             console.log('In the renderer clipboard changed', Date.now(), data.content);
             if (listening) {
                 try {
-                    const item = await getItem('default');
-                    if (item) {
-                        item.content = [...item.content, {
-                            id: uuidv4(),
-                            content: data.content,
-                            ts: Date.now()
-                        }];
-                    }
-                    await updateItem(item);
-                    if (activeTab === 'default')
-                        loadClipsByTab('default');
+                    await saveInto(data.content, 'default');
                 } catch (err) {
                     console.error(err);
                 }
@@ -533,6 +531,9 @@ async function init() {
         importContent();
     });
 
-}
+    window.addEventListener('clouddatachange', async (event) => {
+        await loadTabs();
+        loadClipsByTab(activeTab);
+    });
 
-init();
+})();

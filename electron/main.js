@@ -18,7 +18,8 @@ function createWindow() {
       sandbox: true
     }
   });
-  mainWindow.loadFile('../index.html');
+  // mainWindow.loadFile('../index.html');
+  mainWindow.loadURL(`http://localhost:8080/clipboard-history`);
 }
 
 app.whenReady().then(() => {

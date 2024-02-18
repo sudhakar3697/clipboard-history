@@ -1,10 +1,11 @@
-const cacheName = 'cache-v1';
+const cacheName = 'cache-v2';
 const filesToCache = [
     '/clipboard-history',
     '/clipboard-history/index.html',
     '/clipboard-history/styles.css',
     '/clipboard-history/scripts.js',
     '/clipboard-history/db.js',
+    '/clipboard-history/sync.js',
     '/clipboard-history/uuidv4.min.js',
     '/clipboard-history/manifest.json',
     '/clipboard-history/icons/clipboard.png',
@@ -36,8 +37,8 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-    console.log('[Service Worker] Fetch', e.request.url);
-    if (e.request.url.startsWith('chrome-extension://')) {
+    console.log('[Service Worker] Fetch', e.request.url, e.request.method);
+    if (e.request.url.startsWith('chrome-extension://') || e.request.method !== 'GET') {
         return;
     }
     e.respondWith(

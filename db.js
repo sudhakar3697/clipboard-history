@@ -37,15 +37,18 @@ async function deleteStore() {
     });
 }
 
-async function addItem(item) {
+async function addItem(item, sendEvent = true) {
     const transaction = db.transaction(['clips'], 'readwrite');
     const objectStore = transaction.objectStore('clips');
 
     return new Promise((resolve, reject) => {
         item.ts = Date.now();
+        item.uts = item.ts;
         const request = objectStore.add(item);
         request.onsuccess = function (event) {
             console.log('Item added to database');
+            if (sendEvent)
+                window.dispatchEvent(new CustomEvent('datachange', { detail: { name: 'addItem', item } }));
             resolve();
         };
         request.onerror = function (event) {
@@ -89,14 +92,18 @@ async function getItem(id) {
     });
 }
 
-async function updateItem(updatedItem) {
+async function updateItem(updatedItem, sendEvent = true) {
     const transaction = db.transaction(['clips'], 'readwrite');
     const objectStore = transaction.objectStore('clips');
 
     return new Promise((resolve, reject) => {
+        if (sendEvent)
+            updatedItem.uts = Date.now();
         const request = objectStore.put(updatedItem);
         request.onsuccess = function (event) {
             console.log('Item updated successfully');
+            if (sendEvent)
+                window.dispatchEvent(new CustomEvent('datachange', { detail: { name: 'updateItem', item: updatedItem } }));
             resolve();
         };
         request.onerror = function (event) {
@@ -106,7 +113,7 @@ async function updateItem(updatedItem) {
     });
 }
 
-async function deleteItem(id) {
+async function deleteItem(id, sendEvent = true) {
     const transaction = db.transaction(['clips'], 'readwrite');
     const objectStore = transaction.objectStore('clips');
 
@@ -114,6 +121,8 @@ async function deleteItem(id) {
         const request = objectStore.delete(id);
         request.onsuccess = function (event) {
             console.log('Item deleted successfully');
+            if (sendEvent)
+                window.dispatchEvent(new CustomEvent('datachange', { detail: { name: 'deleteItem', item: id } }));
             resolve();
         };
         request.onerror = function (event) {

@@ -19,6 +19,8 @@
   <body>
     <div id="feature-div">
       <div id="top-bar-div">
+        <span id="syncStat">Not Syncing</span>
+        <button id="syncBtn">Sync</button>
         <button id="importBtn">Import</button>
         <button id="exportBtn">Export</button>
         <label id="listener-label" for="listener">Listening</label>
@@ -38,6 +40,12 @@
         <h4>Quick Shortcuts in the Top</h4>
         <label>Clipboard Monitoring Control</label>
         <input id="st-cmc" type="checkbox" checked />
+        <br />
+        <label>Sync Button</label>
+        <input id="st-sync-btn" type="checkbox" checked />
+        <br />
+        <label>Sync Status</label>
+        <input id="st-sync-stat" type="checkbox" checked />
         <br />
         <label>Import</label>
         <input id="st-import" type="checkbox" checked />
@@ -70,6 +78,13 @@
         <br />
         <br />
         <hr />
+        <h4>Sync</h4>
+        <span id="syncStat2">Not Syncing</span>
+        <br />
+        <br />
+        <button id="syncBtn2">Sync</button>
+        <br />
+        <br />
         <h4>Import & Export</h4>
         <button id="importBtn2">Import</button>
         <br />
@@ -122,5 +137,6 @@
     </script>
     <script src="./db.js"></script>
     <script src="./scripts.js"></script>
+    <script src="./sync.js" type="module"></script>
   </body>
 </html>
